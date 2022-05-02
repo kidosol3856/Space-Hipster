@@ -36,7 +36,11 @@ SpaceHipster.GameState = {
         this.player.body.collideWorldBounds = true;
 
         this.initBullets();
-        this.shootingTimer = this.game.timer.events.loop
+        //console.log("What is this???",this);
+        this.shootingTimer = this.game.time.events.loop(Phaser.Timer.SECOND/5, this.createPlayerBullet, this);
+
+        var enemy = new SpaceHipster.Enemy(this.game, 100, 100, 'greenEnemy', 10, []);
+        this.game.add.existing(enemy);
 
     },
     
@@ -55,7 +59,24 @@ SpaceHipster.GameState = {
     initBullets: function () {
         this.playerBullets = this.add.group();
         this.playerBullets.enableBody = true;
-    }
+    },
+
+    createPlayerBullet: function () {
+        var bullet = this.playerBullets.getFirstExists(false);
+        
+        if(!bullet) {
+            bullet = new SpaceHipster.PlayerBullet(this.game, this.player.x, this.player.top);
+
+            this.playerBullets.add(bullet);
+        }
+        else {
+            //reset position
+            bullet.reset(this.player.x, this.player.top);
+        }
+
+        //set velocity
+        bullet.body.velocity.y = this.BULLET_SPEED;
+    },
 
 
 }
