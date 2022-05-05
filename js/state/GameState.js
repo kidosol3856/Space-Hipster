@@ -41,7 +41,8 @@ SpaceHipster.GameState = {
         //initiate the enemies
         this.initEnemies();
 
-
+        //load level
+        this.loadLevel();
 
 
     },
@@ -49,6 +50,8 @@ SpaceHipster.GameState = {
     update: function () {
 
         this.game.physics.arcade.overlap(this.playerBullets, this.enemies, this.damageEnemy, null, this);
+
+        this.game.physics.arcade.overlap(this.enemyBullets, this.player, this.killPlayer, null, this);
 
         //player is not moving by default
         this.player.body.velocity.x = 0;
@@ -88,16 +91,33 @@ SpaceHipster.GameState = {
         this.enemies = this.add.group();
         this.enemies.enableBody = true;
 
-        var enemy = new SpaceHipster.Enemy(this.game, 100, 100, 'greenEnemy', 10, []);
-        this.enemies.add(enemy);
-
-        enemy.body.velocity.x = 100;
-        enemy.body.velocity.y = 50;
+        this.enemyBullets = this.add.group();
+        this.enemyBullets.enableBody = true;
     },
 
     damageEnemy: function(bullet, enemy) {
         enemy.damage(1);
 
         bullet.kill();
+    },
+
+    killPlayer: function() {
+        this.player.kill();
+        this.game.state.start('GameState');
+    },
+    createEnemy: function(x, y, health, key, scale, speedX, speedY) {
+        var enemy = this.enemies.getFirstExists(false);
+
+        if(!enemy) {
+            enemy = new SpaceHipster.Enemy(this.game, x, y, key, health, this.enemyBullets);
+            this.enemies.add(enemy);
+        }
+        enemy.reset(x, y, health, key, scale, speedx, speedY);
+    }, 
+
+    loadLevel: function() {
+        this.levelData = {
+            "duration"
+        };
     }
 }
